@@ -33,7 +33,7 @@ Done. Exiting...
 ```
 
 ### Build & packaging
-Build is done via maven
+Build using maven
 ```shell script
 mvn clean package
 ```
