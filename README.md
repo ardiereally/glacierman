@@ -22,7 +22,11 @@ Then run the jar file
 ```shell script
 java -jar glupload.jar -Dvault=<vault name> -Darchive=<archive path>
 ```
-When the upload is finished, you should see the following message:
+Example:
+```shell script
+java -jar glupload.jar -Dvault=test-vault -Darchive=test.zip
+```
+When the upload finishes, you should see the following message:
 ```shell script
 Starting glupload...
 Will upload test.zip to vault test-vault in us-east-1
