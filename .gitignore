@@ -3,3 +3,5 @@
 *.jar
 *.class
 *.json
+dependency-reduced-pom.xml
+target

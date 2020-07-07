@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Uploader of archives to AWS Glacier
@@ -36,7 +37,7 @@ public class GlUpload {
         String vaultName = Objects.requireNonNull(System.getProperty("vault"));
         String archivePath = Objects.requireNonNull(System.getProperty("archive"));
 
-        if (List.of(vaultName, archivePath).contains("")) {
+        if (Stream.of(vaultName, archivePath).anyMatch(v -> "".equals(v))) {
             System.err.println("Required argument not supplied. Need all of: vault, archive");
             System.exit(1);
         }
