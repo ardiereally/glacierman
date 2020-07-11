@@ -2,6 +2,8 @@ package com.rdas;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.event.ProgressEvent;
+import com.amazonaws.event.ProgressEventType;
 import com.amazonaws.services.glacier.AmazonGlacier;
 import com.amazonaws.services.glacier.AmazonGlacierClientBuilder;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
@@ -66,12 +68,11 @@ public class GlUpload {
         System.out.println("Will upload " + archivePath + " to vault " + vaultName + " in " + creds.getRegion());
 
         GlUpload glUpload = new GlUpload(archivePath, vaultName, creds);
-        System.out.println("Initialized.");
+        System.out.println("Initialized. Archive size is: " + new File(archivePath).length() / 1e6 + " MB");
 
-        System.out.println("Starting upload....");
         String archiveId = glUpload.upload();
-        System.out.println("Upload done. Archive ID is " + archiveId);
-        System.out.println("Done. Exiting...");
+        System.out.println("Archive ID is " + archiveId);
+        System.out.println("Exiting...");
     }
 
     /**
@@ -79,11 +80,15 @@ public class GlUpload {
      *
      * @return The archiveId
      */
-    public String upload() throws FileNotFoundException {
+    public String upload() {
+        File archiveFile = new File(archivePath);
+        ProgressLogger progressLogger = new ProgressLogger(archiveFile.length());
         return archiveTransferManager.upload(
+                "-",
                 glacierVault,
                 "Glacier backup of " + archivePath,
-                new File(archivePath)
+                archiveFile,
+                progressLogger::logProgress
         ).getArchiveId();
     }
 
@@ -117,6 +122,38 @@ public class GlUpload {
 
         public void setRegion(String region) {
             this.region = region;
+        }
+    }
+
+    public static class ProgressLogger {
+        private final long totalBytes;
+        private long transferredBytes;
+        private long lastLoggedCompletionPercent = -1;
+
+        public ProgressLogger(long totalBytes) {
+            this.totalBytes = totalBytes;
+            this.transferredBytes = 0;
+        }
+
+        public void logProgress(ProgressEvent progressEvent) {
+            if (progressEvent.getEventType() == ProgressEventType.TRANSFER_STARTED_EVENT) {
+                System.out.println("Started");
+            }
+            if (progressEvent.getBytesTransferred() != 0) {
+                transferredBytes += progressEvent.getBytesTransferred();
+                double completion = (double) transferredBytes / (double) totalBytes;
+                long completionPercent = Math.round(completion * 100);
+                if (completionPercent % 5 == 0) {
+                    if (completionPercent == lastLoggedCompletionPercent) {
+                        return;
+                    }
+                    System.out.print(String.format("%d%%...", completionPercent));
+                    lastLoggedCompletionPercent = completionPercent;
+                }
+            }
+            if (progressEvent.getEventType() == ProgressEventType.TRANSFER_COMPLETED_EVENT) {
+                System.out.println("Done!");
+            }
         }
     }
 }
