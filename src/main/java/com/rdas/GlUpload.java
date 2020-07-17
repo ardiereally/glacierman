@@ -67,11 +67,16 @@ public class GlUpload {
 
         System.out.println("Will upload " + archivePath + " to vault " + vaultName + " in " + creds.getRegion());
 
+        double sizeMb = new File(archivePath).length() / (1024.0 * 1024);
         GlUpload glUpload = new GlUpload(archivePath, vaultName, creds);
-        System.out.println("Initialized. Archive size is: " + new File(archivePath).length() / 1e6 + " MB");
+        System.out.println("Initialized. Archive size is: " + sizeMb + " MB");
 
+        long start = System.currentTimeMillis();
         String archiveId = glUpload.upload();
         System.out.println("Archive ID is " + archiveId);
+        double duration = (System.currentTimeMillis() - start) / 1000.0;
+        double speed = sizeMb / duration;
+        System.out.println("Uploaded " + sizeMb + " MBs in " + duration + " seconds at an average speed of " + speed + " MB/s");
         System.out.println("Exiting...");
     }
 
@@ -137,7 +142,7 @@ public class GlUpload {
 
         public void logProgress(ProgressEvent progressEvent) {
             if (progressEvent.getEventType() == ProgressEventType.TRANSFER_STARTED_EVENT) {
-                System.out.println("Started");
+                System.out.print("Started...");
             }
             if (progressEvent.getBytesTransferred() != 0) {
                 transferredBytes += progressEvent.getBytesTransferred();
