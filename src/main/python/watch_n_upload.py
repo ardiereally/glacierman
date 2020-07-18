@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+from datetime import datetime
 
 if len(sys.argv) < 2:
     print("Need vault name to be provided")
@@ -12,7 +13,7 @@ while True:
     complete_archives = [f for f in all_archives if not os.path.exists(f'{f}.part')]
     print(f"Found {len(complete_archives)} uploadable archives")
     if not complete_archives:
-        print('Nothing to upload. Will check later')
+        print(f'Nothing to upload as of {datetime.now()}. Will check later')
         continue
     for archive in complete_archives:
         print(f'Uploading {archive}')
