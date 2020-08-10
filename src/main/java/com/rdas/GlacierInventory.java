@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 import java.io.*;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +21,7 @@ public class GlacierInventory {
     GlacierInventory(String vault) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new FileReader("credentials.json"));
-        GlUpload.Credentials creds = gson.fromJson(reader, GlUpload.Credentials.class);
+        Credentials creds = gson.fromJson(reader, Credentials.class);
 
         client = AmazonGlacierClientBuilder
                 .standard()
@@ -48,9 +49,7 @@ public class GlacierInventory {
                 );
 
         InitiateJobResult initJobResult = client.initiateJob(initJobRequest);
-        String jobId = initJobResult.getJobId();
-        System.out.println(jobId);
-        return jobId;
+        return initJobResult.getJobId();
     }
 
     public void pollStatus(String jobId) throws InterruptedException {
@@ -67,14 +66,14 @@ public class GlacierInventory {
     }
 
     public void getOutput(String jobId) throws IOException {
-        String fileName = vault + "_inventory.json";
+        String fileName = vault + "_inventory_" + new Date().toString().replace(' ', '_') + ".json";
         GetJobOutputRequest jobOutputRequest = new GetJobOutputRequest()
                 .withVaultName(vault)
                 .withJobId(jobId);
         GetJobOutputResult jobOutputResult = client.getJobOutput(jobOutputRequest);
-        FileWriter fstream = new FileWriter(fileName);
+        FileWriter fileWriter = new FileWriter(fileName);
         String inputLine;
-        try (BufferedWriter out = new BufferedWriter(fstream); BufferedReader in = new BufferedReader(new InputStreamReader(jobOutputResult.getBody()))) {
+        try (BufferedWriter out = new BufferedWriter(fileWriter); BufferedReader in = new BufferedReader(new InputStreamReader(jobOutputResult.getBody()))) {
             while ((inputLine = in.readLine()) != null) {
                 out.write(inputLine);
             }
