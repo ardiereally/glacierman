@@ -8,3 +8,5 @@ target
 credentials.json
 *_Vault.json
 done_test.zip
+*-checklist.txt
+*_inventory.json

@@ -32,6 +32,9 @@ def compare_archives(local: Dict[str, int], remote: Dict[str, int]):
         remote_size = remote[name]
         if abs(local_size - remote_size) > SIZE_DIFF_THRESHOLD:
             print(f"[WARN] {name} size difference is greater than {SIZE_DIFF_THRESHOLD}")
+    for name, _ in remote.items():
+        if name not in local:
+            print(f"[WARN] {name} is there in remote, but not in local.")
 
 if __name__ == '__main__':
     local_movies = load_local('movies-checksum.txt')
