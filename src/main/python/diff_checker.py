@@ -1,7 +1,7 @@
 import json
 from typing import Dict
 
-SIZE_DIFF_THRESHOLD = 256 * 1024  # kb
+SIZE_DIFF_THRESHOLD = 2 *1024 * 1024  # mb
 
 def load_local(filename) -> Dict[str, int]:
     archives = dict()
@@ -9,7 +9,7 @@ def load_local(filename) -> Dict[str, int]:
         for line in f:
             size_str, name = line.split(maxsplit=1)
             size_bytes = int(size_str) * 1024
-            name = name.replace('./', '').replace('$', '').rstrip()
+            name = name.replace('./', '').replace('$', '').replace('"', '-').rstrip()
             archives[name] = size_bytes
     return archives
 
@@ -37,6 +37,6 @@ def compare_archives(local: Dict[str, int], remote: Dict[str, int]):
             print(f"[WARN] {name} is there in remote, but not in local.")
 
 if __name__ == '__main__':
-    local_movies = load_local('movies-checksum.txt')
-    remote_movies = load_remote('Movies_inventory.json')
+    local_movies = load_local('tv-checklist.txt')
+    remote_movies = load_remote('TVShows_inventory_Sun_Aug_23_02.49.46_IST_2020.json')
     compare_archives(local_movies, remote_movies)

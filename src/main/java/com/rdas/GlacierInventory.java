@@ -35,8 +35,11 @@ public class GlacierInventory {
     public static void main(String[] args) throws IOException, InterruptedException {
         GlacierInventory inventory = new GlacierInventory(Objects.requireNonNull(System.getProperty("vault")));
         String jobId = inventory.start();
-        System.out.println("Job started: " + jobId);
+        System.out.println("Job started: " + jobId + " (at " + new Date() + ")");
+        long start = System.currentTimeMillis();
         inventory.pollStatus(jobId);
+        long duration = System.currentTimeMillis() - start;
+        System.out.printf("Job completed (at " + new Date() + " ) in %f minutes", ((double) duration) / (1000 * 60));
         inventory.getOutput(jobId);
     }
 
@@ -56,17 +59,18 @@ public class GlacierInventory {
         boolean done;
         do {
             TimeUnit.MINUTES.sleep(2);
-            System.out.println("I'm gonna poll again");
+            System.out.print(".");
             DescribeJobResult result = client.describeJob(new DescribeJobRequest().withJobId(jobId).withVaultName(vault));
             done = result.getCompleted();
             if ("Failed".equals(result.getStatusCode())) {
                 throw new RuntimeException("Job failed! Status message: " + result.getStatusMessage());
             }
         } while (!done);
+        System.out.println();
     }
 
     public void getOutput(String jobId) throws IOException {
-        String fileName = vault + "_inventory_" + new Date().toString().replace(' ', '_') + ".json";
+        String fileName = vault + "_inventory_" + new Date().toString().replace(' ', '_').replace(':', '.') + ".json";
         GetJobOutputRequest jobOutputRequest = new GetJobOutputRequest()
                 .withVaultName(vault)
                 .withJobId(jobId);
