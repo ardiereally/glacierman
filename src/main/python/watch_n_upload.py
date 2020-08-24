@@ -1,26 +1,39 @@
-import sys
 import os
+import re
 import time
 from datetime import datetime
 
-if len(sys.argv) < 2:
-    print("Need vault name to be provided")
-    sys.exit(1)
+def decide_vault(archive_name):
+    name, _ = archive_name.rsplit('.', 1)
+    if re.match(r"^.* \(\d+\)$", name):
+        return "Movies"
+    if re.match(r"^.* - (Specials|Season \d+)$", name):
+        return "TVShows"
+    raise ValueError("Couldn't match " + name)
+
+uploaded_archives = set()
 
 while True:
     time.sleep(30)
-    all_archives = [f for f in os.listdir('.') if (not f.startswith('done') and (f.endswith('tar.gz') or f.endswith('.zip')))]
+    all_archives = [f for f in os.listdir('.') if ((not f.startswith('done')) and f.endswith('.zip'))]
     complete_archives = [f for f in all_archives if not os.path.exists(f'{f}.part')]
-    print(f"Found {len(complete_archives)} uploadable archives")
-    if not complete_archives:
+    pending_archives = [f for f in complete_archives if f not in uploaded_archives]
+    print(f"Found {len(pending_archives)} uploadable archives")
+    if not pending_archives:
         print(f'Nothing to upload as of {datetime.now()}. Will check later')
         continue
-    for archive in complete_archives:
-        print(f'Uploading {archive}')
-        retval = os.system(f'java -jar -Dvault={sys.argv[1]} -Darchive="{archive}" glupload.jar')
+    for archive in pending_archives:
+        vault_name = decide_vault(archive)
+        print(f'Uploading {archive} to {vault_name}')
+        retval = os.system(f'java -jar -Dvault={vault_name} -Darchive="{archive}" glupload.jar')
         if retval != 0:
             print(f'[!!!!!] Upload failed for {archive}')
             continue
         print(f'Uploaded {archive}')
-        os.rename(archive, f'done_{archive}')
+        try:
+            os.rename(archive, f'done_{archive}')
+        except OSError:
+            print(f'Could not rename. Restarting script might re-upload {archive}')
+        uploaded_archives.add(archive)
         print(f'Marked as done {archive}')
+        print('====================================================================')
