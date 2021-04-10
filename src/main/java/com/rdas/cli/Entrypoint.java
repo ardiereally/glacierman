@@ -49,6 +49,44 @@ public class Entrypoint {
         }
     }
 
+    public void doUpload() {
+        System.out.println("Starting upload...");
+        final ArchiveInfo archiveInfo = ArchiveInfo.ofLocal(vaultName, uploadArchive);
+
+        System.out.println("Will upload \"" + uploadArchive.getName() + "\" to vault \"" + vaultName + "\" in " + credentials.getRegion());
+
+        final double sizeMb = uploadArchive.length() / (1024.0 * 1024);
+        final GlUpload glUpload = new GlUpload(archiveInfo, credentials);
+        System.out.println("Initialized. Archive size is: " + sizeMb + " MB");
+
+        final long start = System.currentTimeMillis();
+        final String archiveId = glUpload.upload();
+        System.out.println("Archive ID is " + archiveId);
+        reportSpeed(sizeMb, start);
+    }
+
+    private void doDownload() throws InterruptedException {
+        System.out.println("Starting download...");
+        final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, request.getArchiveId(), new File(request.getLocalFileName()), request.getFileSize());
+
+        System.out.println("Will download archive with id \"" + archiveInfo.getRemoteArchiveId() + "\" from vault \"" + vaultName + "\" to local file \"" + archiveInfo.getLocalArchiveFile() + "\"");
+
+        final GlDownload glDownload = new GlDownload(archiveInfo, credentials);
+        final String jobId = glDownload.prepareArchive();
+        final long start = System.currentTimeMillis();
+        glDownload.download(jobId);
+
+        final double sizeMb = archiveInfo.getLocalArchiveFile().length() / (1024.0 * 1024);
+        System.out.println("Downloaded archive size is: " + sizeMb + " MB");
+        reportSpeed(sizeMb, start);
+    }
+
+    public void doInventory() throws IOException, InterruptedException {
+        System.out.println("Starting inventory...");
+        final GlacierInventory inventory = new GlacierInventory(credentials);
+        inventory.inventory(vaultName);
+    }
+
     private void parseArgs(final String[] args) {
         if (args.length < 2) {
             throw new IllegalArgumentException("Need at least 2 arguments");
@@ -106,42 +144,5 @@ public class Entrypoint {
         final double speed = sizeMb / duration;
         System.out.println("Transferred " + sizeMb + " MBs in " + duration + " seconds at an average speed of " + speed + " MB/s");
         System.out.println("Exiting...");
-    }
-
-    public void doUpload() {
-        System.out.println("Starting glupload...");
-        final ArchiveInfo archiveInfo = ArchiveInfo.ofLocal(vaultName, uploadArchive);
-
-        System.out.println("Will upload \"" + uploadArchive.getName() + "\" to vault \"" + vaultName + "\" in " + credentials.getRegion());
-
-        final double sizeMb = uploadArchive.length() / (1024.0 * 1024);
-        final GlUpload glUpload = new GlUpload(archiveInfo, credentials);
-        System.out.println("Initialized. Archive size is: " + sizeMb + " MB");
-
-        final long start = System.currentTimeMillis();
-        final String archiveId = glUpload.upload();
-        System.out.println("Archive ID is " + archiveId);
-        reportSpeed(sizeMb, start);
-    }
-
-    private void doDownload() throws InterruptedException {
-        System.out.println("Starting gldownload...");
-        final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, request.getArchiveId(), new File(request.getLocalFileName()), request.getFileSize());
-
-        System.out.println("Will download archive with id \"" + archiveInfo.getRemoteArchiveId() + "\" from vault \"" + vaultName + "\" to local file \"" + archiveInfo.getLocalArchiveFile() + "\"");
-
-        final GlDownload glDownload = new GlDownload(archiveInfo, credentials);
-        final String jobId = glDownload.prepareArchive();
-        final long start = System.currentTimeMillis();
-        glDownload.download(jobId);
-
-        final double sizeMb = archiveInfo.getLocalArchiveFile().length() / (1024.0 * 1024);
-        System.out.println("Downloaded archive size is: " + sizeMb + " MB");
-        reportSpeed(sizeMb, start);
-    }
-
-    public void doInventory() throws IOException, InterruptedException {
-        final GlacierInventory inventory = new GlacierInventory(credentials);
-        inventory.inventory(vaultName);
     }
 }
