@@ -1,4 +1,4 @@
-# Glacier-manager
+# Glacierman
 
 Utility for uploading/downloading/listing archives to AWS S3 Glacier
 
@@ -11,8 +11,6 @@ Utility for uploading/downloading/listing archives to AWS S3 Glacier
 - A pre-created S3 Glacier Vault
 
 ### Usage
-
-Make sure your AWS environment is setup properly. For more info see [AWS docs]()
 
 A simple setup using the environment for passing credentials can be done with a file. Put your credentials in a file
 called `credentials.json`:
@@ -30,13 +28,13 @@ Then run the jar file
 #### Upload
 
 ```shell script
-java -jar glupload.jar upload my-vault mydata.zip
+java -jar glacierman.jar upload my-vault mydata.zip
 ```
 
 #### Download
 
 ```shell script
-java -jar glupload.jar download my-vault download-request.json
+java -jar glacierman.jar download my-vault download-request.json
 ```
 
 The file `download-request.json` must contain the details of a archive in the following format:
@@ -52,7 +50,7 @@ The file `download-request.json` must contain the details of a archive in the fo
 #### Inventory
 
 ```shell
-java -jar glupload.jar inventory my-vault
+java -jar glacierman.jar inventory my-vault
 ```
 
 The inventory data will be downloaded \& written to a local file
