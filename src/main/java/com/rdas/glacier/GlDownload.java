@@ -40,7 +40,7 @@ public class GlDownload extends GlTransfer {
             System.out.print(".");
             final DescribeJobResult result = glacierClient.describeJob(new DescribeJobRequest().withJobId(job).withVaultName(archiveInfo.getVaultName()));
             done = result.getCompleted();
-            if ("Failed".equals(result.getStatusCode())) {
+            if ("Failed".equalsIgnoreCase(result.getStatusCode())) {
                 throw new RuntimeException("Job failed! Status message: " + result.getStatusMessage());
             }
         } while (!done);
