@@ -1,4 +1,4 @@
-package com.rdas;
+package com.rdas.common;
 
 public class Credentials {
     private String accessKeyId;
@@ -12,7 +12,7 @@ public class Credentials {
         return accessKeyId;
     }
 
-    public void setAccessKeyId(String accessKeyId) {
+    public void setAccessKeyId(final String accessKeyId) {
         this.accessKeyId = accessKeyId;
     }
 
@@ -20,7 +20,7 @@ public class Credentials {
         return secretAccessKey;
     }
 
-    public void setSecretAccessKey(String secretAccessKey) {
+    public void setSecretAccessKey(final String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
     }
 
@@ -28,7 +28,7 @@ public class Credentials {
         return region;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(final String region) {
         this.region = region;
     }
 }
