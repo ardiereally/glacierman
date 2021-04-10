@@ -6,13 +6,13 @@ public class DownloadArchiveRequest {
 
     private String localFileName;
 
-    private long fileSize;
+    private String fileSize;
 
     public DownloadArchiveRequest() {
         // nullary for serialization
     }
 
-    public DownloadArchiveRequest(final String archiveId, final String localFileName, final long fileSize) {
+    public DownloadArchiveRequest(final String archiveId, final String localFileName, final String fileSize) {
         this.archiveId = archiveId;
         this.localFileName = localFileName;
         this.fileSize = fileSize;
@@ -34,11 +34,11 @@ public class DownloadArchiveRequest {
         this.localFileName = localFileName;
     }
 
-    public long getFileSize() {
+    public String getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(final long fileSize) {
+    public void setFileSize(final String fileSize) {
         this.fileSize = fileSize;
     }
 }

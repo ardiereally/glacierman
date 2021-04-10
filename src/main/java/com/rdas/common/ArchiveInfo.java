@@ -34,8 +34,8 @@ public class ArchiveInfo {
      * @param archiveId The ID of the archive
      * @return The info object
      */
-    public static ArchiveInfo ofRemote(final String vaultName, final String archiveId, final File archivePath, final long fileSizeBytes) {
-        return new ArchiveInfo(vaultName, archiveId, archivePath, fileSizeBytes);
+    public static ArchiveInfo ofRemote(final String vaultName, final String archiveId, final File archivePath, final String fileSizeBytes) {
+        return new ArchiveInfo(vaultName, archiveId, archivePath, Long.parseLong(fileSizeBytes));
     }
 
     public String getVaultName() {
