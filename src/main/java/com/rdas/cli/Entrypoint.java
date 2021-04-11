@@ -49,7 +49,7 @@ public class Entrypoint {
         }
     }
 
-    public void doUpload() {
+    private void doUpload() {
         System.out.println("Starting upload...");
         final ArchiveInfo archiveInfo = ArchiveInfo.ofLocal(vaultName, uploadArchive);
 
@@ -81,7 +81,7 @@ public class Entrypoint {
         reportSpeed(sizeMb, start);
     }
 
-    public void doInventory() throws IOException, InterruptedException {
+    private void doInventory() throws IOException, InterruptedException {
         System.out.println("Starting inventory...");
         final GlacierInventory inventory = new GlacierInventory(credentials);
         inventory.inventory(vaultName);
