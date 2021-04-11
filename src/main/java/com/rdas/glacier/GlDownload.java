@@ -5,6 +5,7 @@ import com.rdas.common.ArchiveInfo;
 import com.rdas.common.Credentials;
 import com.rdas.common.Utilities;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,7 +69,7 @@ public class GlDownload extends GlTransfer {
      */
     public void download(final String jobId) {
         final Utilities.ProgressLogger progressLogger = new Utilities.ProgressLogger(archiveInfo.getFileSizeBytes());
-        System.out.println("Starting download");
+        System.out.println("Starting download at " + new Date() + ". Archive size is: " + (archiveInfo.getFileSizeBytes() / (1024.0 * 1024)) + " MB");
         final long start = System.currentTimeMillis();
         archiveTransferManager.downloadJobOutput(
                 "-",
