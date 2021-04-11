@@ -9,9 +9,9 @@ import static com.rdas.common.Utilities.generateArchiveDescription;
 /**
  * Uploader of archives to AWS Glacier
  */
-public class GlUpload extends GlTransfer {
+public class GlacierUpload extends GlacierTransfer {
 
-    public GlUpload(final ArchiveInfo archiveInfo, final Credentials creds) {
+    public GlacierUpload(final ArchiveInfo archiveInfo, final Credentials creds) {
         super(archiveInfo, creds);
     }
 

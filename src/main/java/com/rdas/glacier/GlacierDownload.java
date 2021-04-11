@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Downloader of AWS Glacier archives
  */
-public class GlDownload extends GlTransfer {
+public class GlacierDownload extends GlacierTransfer {
 
-    public GlDownload(final ArchiveInfo archiveInfo, final Credentials creds) {
+    public GlacierDownload(final ArchiveInfo archiveInfo, final Credentials creds) {
         super(archiveInfo, creds);
     }
 

@@ -15,12 +15,12 @@ import com.rdas.common.Credentials;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class GlTransfer {
+public abstract class GlacierTransfer {
     protected final ArchiveInfo archiveInfo;
     protected final AmazonGlacier glacierClient;
     protected final ArchiveTransferManager archiveTransferManager;
 
-    public GlTransfer(final ArchiveInfo archiveInfo, final Credentials creds) {
+    public GlacierTransfer(final ArchiveInfo archiveInfo, final Credentials creds) {
         this.archiveInfo = requireNonNull(archiveInfo, "archive info is null");
 
         this.glacierClient = AmazonGlacierClientBuilder

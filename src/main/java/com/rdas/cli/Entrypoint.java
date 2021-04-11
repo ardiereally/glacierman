@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.rdas.common.ArchiveInfo;
 import com.rdas.common.Credentials;
-import com.rdas.glacier.GlDownload;
-import com.rdas.glacier.GlUpload;
+import com.rdas.glacier.GlacierDownload;
 import com.rdas.glacier.GlacierInventory;
+import com.rdas.glacier.GlacierUpload;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,7 +56,7 @@ public class Entrypoint {
         System.out.println("Will upload \"" + uploadArchive.getName() + "\" to vault \"" + vaultName + "\" in " + credentials.getRegion());
 
         final double sizeMb = uploadArchive.length() / (1024.0 * 1024);
-        final GlUpload glUpload = new GlUpload(archiveInfo, credentials);
+        final GlacierUpload glUpload = new GlacierUpload(archiveInfo, credentials);
         System.out.println("Initialized. Archive size is: " + sizeMb + " MB");
 
         final long start = System.currentTimeMillis();
@@ -71,10 +71,10 @@ public class Entrypoint {
 
         System.out.println("Will download archive with id \"" + archiveInfo.getRemoteArchiveId() + "\" from vault \"" + vaultName + "\" to local file \"" + archiveInfo.getLocalArchiveFile() + "\"");
 
-        final GlDownload glDownload = new GlDownload(archiveInfo, credentials);
-        final String jobId = glDownload.prepareArchive();
+        final GlacierDownload glacierDownload = new GlacierDownload(archiveInfo, credentials);
+        final String jobId = glacierDownload.prepareArchive();
         final long start = System.currentTimeMillis();
-        glDownload.download(jobId);
+        glacierDownload.download(jobId);
 
         final double sizeMb = archiveInfo.getLocalArchiveFile().length() / (1024.0 * 1024);
         System.out.println("Downloaded archive size is: " + sizeMb + " MB");
