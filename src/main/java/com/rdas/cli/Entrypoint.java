@@ -82,7 +82,7 @@ public class Entrypoint {
     }
 
     private void doInventory() throws IOException, InterruptedException {
-        System.out.println("Starting inventory...");
+        System.out.println("Starting inventory of " + vaultName + " ...");
         final GlacierInventory inventory = new GlacierInventory(credentials);
         inventory.inventory(vaultName);
     }
