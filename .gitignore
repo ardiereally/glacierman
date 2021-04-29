@@ -11,3 +11,4 @@ credentials.json
 *_inventory.json
 downloads.json
 *_test.zip
+job_*.json

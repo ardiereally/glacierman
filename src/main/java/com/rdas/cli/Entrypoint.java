@@ -65,7 +65,7 @@ public class Entrypoint {
         reportSpeed(sizeMb, start);
     }
 
-    private void doDownload() throws InterruptedException {
+    private void doDownload() throws InterruptedException, IOException {
         System.out.println("Starting download...");
         final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, request.getArchiveId(), new File(request.getLocalFileName()), request.getFileSize());
 
