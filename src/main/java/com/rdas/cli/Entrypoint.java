@@ -46,6 +46,7 @@ public class Entrypoint {
             case "delete":
                 loadDownloadRequest();
                 doDelete();
+                break;
             case "inventory":
                 doInventory();
                 break;
