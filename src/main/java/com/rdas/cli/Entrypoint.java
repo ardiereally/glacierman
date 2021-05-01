@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.rdas.common.ArchiveInfo;
 import com.rdas.common.Credentials;
+import com.rdas.glacier.GlacierDelete;
 import com.rdas.glacier.GlacierDownload;
 import com.rdas.glacier.GlacierInventory;
 import com.rdas.glacier.GlacierUpload;
@@ -25,7 +26,7 @@ public class Entrypoint {
 
     private Credentials credentials;
 
-    private DownloadArchiveRequest request;
+    private DownloadArchiveRequest downloadRequest;
 
     public static void main(final String[] args) throws IOException, InterruptedException {
         new Entrypoint().execute(args);
@@ -42,11 +43,22 @@ public class Entrypoint {
                 loadDownloadRequest();
                 doDownload();
                 break;
+            case "delete":
+                loadDownloadRequest();
+                doDelete();
             case "inventory":
                 doInventory();
                 break;
             default:
         }
+    }
+
+    private void doDelete() {
+        System.out.println("ATTENTION! The following archive will be deleted from the vault " + vaultName + ": Name = " + downloadRequest.getLocalFileName() + ", Size = " + downloadRequest.getFileSize() + " bytes");
+        final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, downloadRequest.getArchiveId(), null, downloadRequest.getFileSize());
+        final GlacierDelete glDelete = new GlacierDelete(archiveInfo, credentials);
+        glDelete.delete();
+        System.out.println("Archive has been deleted from vault");
     }
 
     private void doUpload() {
@@ -67,7 +79,7 @@ public class Entrypoint {
 
     private void doDownload() throws InterruptedException, IOException {
         System.out.println("Starting download...");
-        final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, request.getArchiveId(), new File(request.getLocalFileName()), request.getFileSize());
+        final ArchiveInfo archiveInfo = ArchiveInfo.ofRemote(vaultName, downloadRequest.getArchiveId(), new File(downloadRequest.getLocalFileName()), downloadRequest.getFileSize());
 
         System.out.println("Will download archive with id \"" + archiveInfo.getRemoteArchiveId() + "\" from vault \"" + vaultName + "\" to local file \"" + archiveInfo.getLocalArchiveFile() + "\"");
 
@@ -96,6 +108,7 @@ public class Entrypoint {
         switch (action) {
             case "upload":
             case "download":
+            case "delete":
             case "inventory":
                 this.action = action;
                 break;
@@ -110,7 +123,7 @@ public class Entrypoint {
             this.vaultName = vaultName;
         }
 
-        if (this.action.equals("upload") || this.action.equals("download")) {
+        if (this.action.equals("upload") || this.action.equals("download") || this.action.equals("delete")) {
             if (args.length < 3) {
                 throw new IllegalArgumentException("Need 3 arguments");
             }
@@ -136,7 +149,7 @@ public class Entrypoint {
     private void loadDownloadRequest() throws FileNotFoundException {
         final Gson gson = new Gson();
         final JsonReader reader = new JsonReader(new FileReader(downloadRequestsFile));
-        this.request = gson.fromJson(reader, DownloadArchiveRequest.class);
+        this.downloadRequest = gson.fromJson(reader, DownloadArchiveRequest.class);
     }
 
     private void reportSpeed(final double sizeMb, final long start) {
